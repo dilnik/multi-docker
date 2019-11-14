@@ -2,17 +2,27 @@ sudo: required
 services:
     - docker
 before_install:
-    - docker build -t my_image -f Dockerfile.dev .
+    - docker build -t my_image -f ./client/Dockerfile.dev ./client
 script:
     - docker run -e CI=true my_image npm run test
-deploy:
-    provider: elasticbeanstalk
-    region: "us-east-2"
-    app: "docker-react"
-    env: "DockerReact-env"
-    bucket_name: "elasticbeanstalk-us-east-2-739261791239"
-    bucket_path: "docker-react"
-    on:
-        branch: master
-    access_key_id: $AWS_ACCESS_KEY
-    secret_access_key: $AWS_SECRET_KEY
+after_success:
+    - docker build -t bigfatdocker/multi-client ./client
+    - docker build -t bigfatdocker/multi-nginx ./nginx
+    - docker build -t bigfatdocker/multi-server ./server
+    - docker build -t bigfatdocker/multi-worker ./worker
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+    - docker push bigfatdocker/multi-client
+    - docker push bigfatdocker/multi-nginx
+    - docker push bigfatdocker/multi-server
+    - docker push bigfatdocker/multi-worker
+# deploy:
+    # provider: elasticbeanstalk
+    # region: "us-east-2"
+    # app: "docker-react"
+    # env: "DockerReact-env"
+    # bucket_name: "elasticbeanstalk-us-east-2-739261791239"
+    # bucket_path: "docker-react"
+    # on:
+        # branch: master
+    # access_key_id: $AWS_ACCESS_KEY
+    # secret_access_key: $AWS_SECRET_KEY
