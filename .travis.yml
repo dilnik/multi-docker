@@ -10,8 +10,7 @@ after_success:
     - docker build -t bigfatdocker/multi-nginx ./nginx
     - docker build -t bigfatdocker/multi-server ./server
     - docker build -t bigfatdocker/multi-worker ./worker
-    #- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-    - docker login --username "$DOCKER_ID" --password "$DOCKER_PASSWORD"
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
     - docker push bigfatdocker/multi-client
     - docker push bigfatdocker/multi-nginx
     - docker push bigfatdocker/multi-server
